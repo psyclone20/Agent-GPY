@@ -1,0 +1,5 @@
+( __X__ = Yet to find out )
+
+1. CUDA Toolkit
+2. vJoy (vJoy Virtual Device and vJoy SDK. Move SDK to __PATH__)
+3. x360ce
