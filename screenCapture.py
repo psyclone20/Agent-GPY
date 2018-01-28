@@ -1,12 +1,10 @@
 import numpy as np
 from PIL import ImageGrab
 import cv2
-import time
-import pyautogui
 import pyvjoy
-import math
-
-
+import sys
+import ObjectDetectionDeepLearning.deep_learning_object_detection
+import threading
 
 
 ###################################################################### Constants
@@ -102,6 +100,26 @@ def square_in(startX, startY, endX, endY, windowCenterX, windowCenterY):
 
 
 ###################################################################### Main
-square_in(220, 100, 220, 100, WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
-# controller_test()
+tempOut = str(sys.stdout)
+# if myStdout.find("TARGET-INFO") != -1:
+#     print("TARGET COORDS FOUND --------------------------------------------------")
+
+scannerThread = threading.Thread(target=ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection)
+scannerThread.start()
+
+# while True:
+#     if str(myStdout) != tempOut:
+#         tempOut = str(myStdout)
+#         if tempOut.find("TARGET-INFO") > -1:
+#             print("Viper FOUND --------------------------------------")
+
+
+while True:
+    print(str(sys.stdout))
+    # if ':' in str(sys.stdout):
+    #     print("Viper")
+
+
+
+# square_in(220, 100, 220, 100, WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
 ###################################################################### Main

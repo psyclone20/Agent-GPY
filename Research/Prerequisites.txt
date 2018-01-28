@@ -3,3 +3,7 @@
 1. CUDA Toolkit
 2. vJoy (vJoy Virtual Device and vJoy SDK. Move SDK to __PATH__)
 3. x360ce
+
+(YOLO)
+4. Download Darknet from https://github.com/AlexeyAB/darknet#how-to-compile-on-windows
+5. Download from the same page and extract OpenCV to C:\opencv_3.0\
