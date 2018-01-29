@@ -10,8 +10,8 @@ import threading
 ###################################################################### Constants
 WINDOW_START_X = 0
 WINDOW_START_Y = 0
-WINDOW_WIDTH = 400
-WINDOW_HEIGHT = 400
+WINDOW_WIDTH = 1920
+WINDOW_HEIGHT = 1080
 
 
 MAX_VJOY = 32767
@@ -57,6 +57,10 @@ def square_in(startX, startY, endX, endY, windowCenterX, windowCenterY):
     diffX = midTargetX - windowCenterX
     diffY = midTargetY - windowCenterY
 
+    print("diffX = ", diffX)
+    print("diffY = ", diffY)
+    return
+
 
     if diffY < 0:
         verticalBias = -1
@@ -100,24 +104,20 @@ def square_in(startX, startY, endX, endY, windowCenterX, windowCenterY):
 
 
 ###################################################################### Main
-tempOut = str(sys.stdout)
-# if myStdout.find("TARGET-INFO") != -1:
-#     print("TARGET COORDS FOUND --------------------------------------------------")
 
-scannerThread = threading.Thread(target=ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection)
-scannerThread.start()
+# scannerThread = threading.Thread(target=ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection)
+# scannerThread.start()
 
-# while True:
-#     if str(myStdout) != tempOut:
-#         tempOut = str(myStdout)
-#         if tempOut.find("TARGET-INFO") > -1:
-#             print("Viper FOUND --------------------------------------")
-
-
+myVar = 0
 while True:
-    print(str(sys.stdout))
-    # if ':' in str(sys.stdout):
-    #     print("Viper")
+    myVar = myVar +1
+    objectArray = ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection()
+    if objectArray:
+        for objectCoord in objectArray:
+            # print(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
+            square_in(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4], WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
+            break
+    print('-------------------------------------------------- ', myVar)
 
 
 

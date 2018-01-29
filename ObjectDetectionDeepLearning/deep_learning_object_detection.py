@@ -57,47 +57,49 @@ net = cv2.dnn.readNetFromCaffe(pathToProtoTxt, pathToModel)
 
 
 def runDeepLearningObjectDetection():
-	myVar = 0
-	while(True):
-
-		myVar += 1
-		image = np.array(ImageGrab.grab(bbox=(0, 0, w, h)))
-		blob = cv2.dnn.blobFromImage(image, 0.007843, (w, h), 127.5)
+    returnList = []
+    image = np.array(ImageGrab.grab(bbox=(0, 0, w, h)))
+    blob = cv2.dnn.blobFromImage(image, 0.007843, (w, h), 127.5)
 
 
-		# print("[INFO] computing object detections...")
-		net.setInput(blob)
-		detections = net.forward()
+    # print("[INFO] computing object detections...")
+    net.setInput(blob)
+    detections = net.forward()
 
-		# loop over the detections
-		for i in np.arange(0, detections.shape[2]):
-			# extract the confidence (i.e., probability) associated with the
-			# prediction
-			confidence = detections[0, 0, i, 2]
+    # loop over the detections
+    for i in np.arange(0, detections.shape[2]):
+        # extract the confidence (i.e., probability) associated with the
+        # prediction
+        confidence = detections[0, 0, i, 2]
 
-			# Custom confidence value
-			if confidence > 0.8:
-				# extract the index of the class label from the `detections`,
-				# then compute the (x, y)-coordinates of the bounding box for
-				# the object
-				idx = int(detections[0, 0, i, 1])
-				box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-				(startX, startY, endX, endY) = box.astype("int")
+        # Custom confidence value
+        if confidence > 0.8:
+            # extract the index of the class label from the `detections`,
+            # then compute the (x, y)-coordinates of the bounding box for
+            # the object
+            idx = int(detections[0, 0, i, 1])
+            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            (startX, startY, endX, endY) = box.astype("int")
 
 
 
-				# label = "{}: {:.2f}%".format(CLASSES[idx], confidence * 100)
-				label = "{}".format(CLASSES[idx])
-				print("[TARGET-INFO]:{}:{},{},{},{}".format(label, startX, startY, endX, endY))
-				cv2.rectangle(image, (startX, startY), (endX, endY),
-					COLORS[idx], 2)
-				y = startY - 15 if startY - 15 > 15 else startY + 15
-				cv2.putText(image, label, (startX, y),
-					cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+            # label = "{}: {:.2f}%".format(CLASSES[idx], confidence * 100)
+            label = "{}".format(CLASSES[idx])
+            # print("[TARGET-INFO]:{}:{},{},{},{}".format(label, startX, startY, endX, endY))
+            cv2.rectangle(image, (startX, startY), (endX, endY),
+                COLORS[idx], 2)
+            y = startY - 15 if startY - 15 > 15 else startY + 15
+            cv2.putText(image, label, (startX, y),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+
+            if label.find('person') != -1:
+                returnList.append((confidence, startX, startY, endX, endY))
 
 
-		print("--------------------------------------------------", format(myVar))
-		# show the output image
-		# cv2.imshow("Output", image)
-		# cv2.imwrite("C:\Users\WindowsFour\Desktop\frame_" + i + ".jpg", image)
-		# cv2.waitKey(0)
+    # show the output image
+    # cv2.imshow("Output", image)
+    # cv2.imwrite("C:\Users\WindowsFour\Desktop\frame_" + i + ".jpg", image)
+    # cv2.waitKey(0)
+
+    if returnList:
+        return returnList
