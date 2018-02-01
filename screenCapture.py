@@ -57,9 +57,9 @@ def square_in(startX, startY, endX, endY, windowCenterX, windowCenterY):
     diffX = midTargetX - windowCenterX
     diffY = midTargetY - windowCenterY
 
-    print("diffX = ", diffX)
-    print("diffY = ", diffY)
-    return
+    # print("diffX = ", diffX)
+    # print("diffY = ", diffY)
+    # return
 
 
     if diffY < 0:
@@ -95,8 +95,8 @@ def square_in(startX, startY, endX, endY, windowCenterX, windowCenterY):
         controller.data.wAxisY = MID_VJOY + int(MID_VJOY * verticalBias)
         controller.update()
 
-    print("controller.data.wAxisX = ", controller.data.wAxisX)
-    print("controller.data.wAxisY = ", controller.data.wAxisY)
+    print("controller.data.wAxisX = {:.0f}%".format((controller.data.wAxisX - MID_VJOY) / MAX_VJOY * 200))
+    print("controller.data.wAxisY = {:.0f}%".format((controller.data.wAxisY - MID_VJOY) / MAX_VJOY * 200))
 
 
 ###################################################################### Controller
