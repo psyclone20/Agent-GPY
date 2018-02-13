@@ -5,6 +5,7 @@ import pyvjoy
 import sys
 import ObjectDetectionDeepLearning.deep_learning_object_detection
 import threading
+import pyautogui as gui
 
 
 ###################################################################### Constants
@@ -103,6 +104,17 @@ def square_in(startX, startY, endX, endY, windowCenterX, windowCenterY):
 
 
 
+###################################################################### flick_movement
+    
+def flick_movement(startX, startY, endX, endY):
+    # distance = (startX+endX)
+    print ('Moving to target location')
+    gui.moveTo((startX+endX)/2, (startY+endY)/2, duration=0.0)
+
+###################################################################### flick_movement
+
+
+
 ###################################################################### Main
 
 # scannerThread = threading.Thread(target=ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection)
@@ -114,8 +126,11 @@ while True:
     objectArray = ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection()
     if objectArray:
         for objectCoord in objectArray:
-            # print(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
-            square_in(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4], WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
+            print(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
+            # square_in(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4], WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
+            flickMovementThread = threading.Thread(target=flick_movement, args=[objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4]])
+            flickMovementThread.start()
+            # flick_movement(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
             break
     print('-------------------------------------------------- ', myVar)
 
