@@ -109,7 +109,8 @@ def square_in(startX, startY, endX, endY, windowCenterX, windowCenterY):
 def flick_movement(startX, startY, endX, endY):
     # distance = (startX+endX)
     print ('Moving to target location')
-    gui.moveTo((startX+endX)/2, (startY+endY)/2, duration=0.0)
+    # gui.moveTo((startX+endX)/2, (startY+endY)/2, duration=0.0)
+    gui.click(x=(startX+endX)/2, y=(startY+endY)/2)
 
 ###################################################################### flick_movement
 
