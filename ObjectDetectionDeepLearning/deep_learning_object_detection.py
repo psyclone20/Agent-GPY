@@ -48,7 +48,7 @@ net = cv2.dnn.readNetFromCaffe(pathToProtoTxt, pathToModel)
 # implementation)
 # image = cv2.imread(args["image"]) custom comment
 # (h, w) = image.shape[:2] custom comment
-(h, w) = (1080, 1920)
+# (h, w) = (1080, 1920)
 # blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 0.007843, (300, 300), 127.5) custom comment
 # blob = cv2.dnn.blobFromImage(image, 0.007843, (1280, 960), 127.5) custom comment
 
@@ -56,10 +56,10 @@ net = cv2.dnn.readNetFromCaffe(pathToProtoTxt, pathToModel)
 
 
 
-def runDeepLearningObjectDetection(image):
+def runDeepLearningObjectDetection(image, size=(w, h)):
     returnList = []
     # image = np.array(ImageGrab.grab(bbox=(0, 0, w, h)))
-    blob = cv2.dnn.blobFromImage(image, 0.007843, (w, h), 127.5)
+    blob = cv2.dnn.blobFromImage(image, 0.007843, size, 127.5)
 
 
     # print("[INFO] computing object detections...")
