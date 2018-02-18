@@ -56,9 +56,9 @@ net = cv2.dnn.readNetFromCaffe(pathToProtoTxt, pathToModel)
 
 
 
-def runDeepLearningObjectDetection():
+def runDeepLearningObjectDetection(image):
     returnList = []
-    image = np.array(ImageGrab.grab(bbox=(0, 0, w, h)))
+    # image = np.array(ImageGrab.grab(bbox=(0, 0, w, h)))
     blob = cv2.dnn.blobFromImage(image, 0.007843, (w, h), 127.5)
 
 
