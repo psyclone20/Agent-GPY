@@ -1,11 +1,13 @@
 import numpy as np
-from PIL import ImageGrab
+# from PIL import ImageGrab
 import cv2
 import pyvjoy
 import sys
 import ObjectDetectionDeepLearning.deep_learning_object_detection
+import grabscreen
 import threading
 import pyautogui as gui
+
 
 
 ###################################################################### Constants
@@ -124,7 +126,8 @@ def flick_movement(startX, startY, endX, endY):
 myVar = 0
 while True:
     myVar = myVar +1
-    objectArray = ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection()
+    screen = cv2.cvtColor(np.array(grabscreen.grab_screen(region=(5, 30, 1275, 740))), cv2.COLOR_BGR2RGB)
+    objectArray = ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection(screen, (1270, 710))
     if objectArray:
         for objectCoord in objectArray:
             print(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
