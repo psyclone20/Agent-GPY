@@ -8,7 +8,7 @@ import recognizer
 import grabscreen
 import threading
 import pyautogui as gui
-
+import directInput
 from time import sleep
 
 
@@ -154,6 +154,120 @@ def flick_movement(startX, startY, endX, endY):
 
 ###################################################################### flick_movement
 
+###################################################################### Methods for Navigation
+
+def draw_lines(img, lines):
+    for line in lines:
+        coords = line[0]
+        cv2.line(img, (coords[0], coords[1]), (coords[2], coords[3]), 255, 3)
+        cv2.circle(img, (coords[0], coords[1]), 10, 255, 2)
+    coords = lines[0][0]
+    cv2.line(img, (coords[0], coords[1]), (coords[2], coords[3]), 255, 20)
+
+def draw_processed_lines(img, procLines):
+    for line in procLines:
+        # print("{}".format(line))
+        cv2.line(img, (line[0],line[1]), (line[2],line[3]), 255, 3)
+        cv2.circle(img, (line[0], line[1]), 10, 255, 2)
+
+
+def roi(img, vertices):
+    mask = np.zeros_like(img)
+    cv2.fillPoly(mask, vertices, 255)
+    masked = cv2.bitwise_and(img, mask)
+    return masked
+
+def processLines(lines):
+    M_TRES = 0.5
+    C_TRES = 0.5
+    MAX_LINES = 8
+
+    metaLines = []
+    newLines = []
+    i_newLines = -1
+    
+    try:
+
+
+        # Store lines first
+        for line in lines:
+            x1,y1,x2,y2 = line[0]
+            # print('//////////\n\n{} {} {} {}'.format(x1,y1,x2,y2))
+            if x2-x1 == 0:
+                m = 999999
+            else:
+                m = (y2-y1) / (x2-x1)
+
+            c = y2 - m*x2
+            
+            if m == 0:
+                if x1 < x2:
+                    metaLines.append([x1,y1,x2,y2,m,c,False])
+                else:
+                    metaLines.append([x2,y2,x1,y1,m,c,False])
+            else:
+                if y1 < y2:
+                    metaLines.append([x2,y2,x1,y1,m,c,False])
+                else:
+                    metaLines.append([x1,y1,x2,y2,m,c,False])
+        # print("{}".format(metaLines))
+        
+        
+        
+
+
+
+        for i in range(MAX_LINES):
+            breaker = True
+            for metaLine in metaLines:
+                if not metaLine[6]:
+                    breaker = False
+                    newLines.append(metaLine)
+                    i_newLines += 1
+                    metaLine[6] = True
+                    break
+
+            if breaker:
+                break
+            
+
+            for metaLine in metaLines:
+                if not metaLine[6]:
+                    if (
+                            metaLine[4] < newLines[i_newLines][4]*(1+M_TRES) and 
+                            metaLine[4] > newLines[i_newLines][4]*(1-M_TRES) and
+                            metaLine[5] < newLines[i_newLines][5]*(1+C_TRES) and 
+                            metaLine[5] > newLines[i_newLines][5]*(1-C_TRES)
+                        ):
+
+                        # Visited
+                        metaLine[6] = True
+                        
+                        # if not vertical
+                        if metaLine[2] - metaLine[0] != 0:
+                            if newLines[i_newLines][1] < metaLine[1]:
+                                newLines[i_newLines][1] = metaLine[1]
+                                newLines[i_newLines][0] = metaLine[0]
+
+                            if newLines[i_newLines][3] > metaLine[3]:
+                                newLines[i_newLines][3] = metaLine[3]
+                                newLines[i_newLines][2] = metaLine[2]
+
+        
+
+        return newLines
+    except TypeError:
+        print("No lines found!")
+
+    return None
+
+def findLineLength(line):
+    diffx = line[2] - line[0]
+    diffy = line[3] - line[1]
+    return np.sqrt(diffx*diffx + diffy*diffy)
+
+###################################################################### Methods for Navigation
+
 
 
 ###################################################################### Main
@@ -162,24 +276,117 @@ def flick_movement(startX, startY, endX, endY):
 # scannerThread.start()
 
 myVar = 0
+tres1 = 160
+tres_gap = 10
+
+minLineLength = 40
+maxLineGap = 5
+threshold = 1
+
 while True:
     myVar = myVar +1
     screen = cv2.cvtColor(np.array(grabscreen.grab_screen(region=(0, 30, 800, 540))), cv2.COLOR_BGR2RGB)
+
     startX, startY, endX, endY = recognizer.recognize(screen, args["team"])
-    # arr = recognizer.recognition()
-    # print (arr)
-    # objectArray = ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection(screen,1270,710)
-    # print(objectArray)
+
     if startX != -1 and startY != -1:
         # for objectCoord in objectArray:
             # print(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
             # square_in(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4], WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
             # flickMovementThread = threading.Thread(target=flick_movement, args=[startX, startY, endX, endY])
             # flickMovementThread.start()
-            flick_movement(startX, startY, endX, endY)
+        print ("Shoot him!!!!!!!!!!")
+        flick_movement(startX, startY, endX, endY)
             # flick_movement(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
             # break
     # print('-------------------------------------------------- ', myVar)
+
+    else:
+
+        processedScreen = cv2.cvtColor(screen, cv2.COLOR_BGR2GRAY)
+        processedScreen = cv2.equalizeHist(processedScreen)
+
+        bg_img = cv2.dilate(processedScreen, np.ones((7,7), np.uint8))
+
+        processedScreen = 255 - cv2.absdiff(processedScreen, bg_img)
+        
+        norm_img = processedScreen.copy()
+        cv2.normalize(processedScreen, norm_img, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+        tempTres = 200
+        processedScreen = cv2.Canny(processedScreen, tempTres, tempTres+1, L2gradient=False)
+
+        vertices = np.array([
+            [0,320],
+            [0,670],
+            [780,670],
+            [780,460],
+            [860,460],
+            [1140,640],
+            [1270,640],
+            [1270,320]])
+        processedScreen = roi(processedScreen, [vertices])
+
+        lines = cv2.HoughLinesP(processedScreen, 1, np.pi/180, 100, 100, minLineLength, maxLineGap)
+
+        # if startX != -1 and startY != -1:
+        #     # for objectCoord in objectArray:
+        #         # print(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
+        #         # square_in(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4], WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
+        #         # flickMovementThread = threading.Thread(target=flick_movement, args=[startX, startY, endX, endY])
+        #         # flickMovementThread.start()
+        #     print ("Shoot him!!!!!!!!!!")
+        #     flick_movement(startX, startY, endX, endY)
+        #         # flick_movement(objectCoord[1], objectCoord[2], objectCoord[3], objectCoord[4])
+        #         # break
+        # # print('-------------------------------------------------- ', myVar)
+
+        if not (lines is None):
+            # draw_lines(processedScreen, lines)
+            newLines = processLines(lines)
+            draw_processed_lines(processedScreen, newLines)
+
+            for newLine in newLines:
+                if findLineLength(newLine) > 400:
+                    ALMOST_FLAT_SLOPE = 0.05
+                    m_pos = gui.position()
+                    # print(newLine)
+                    if newLine[4] > 0:
+                        if newLine[4] < ALMOST_FLAT_SLOPE:
+                            print("//////////////////////////////\nSlope > 0!")
+                            gui.moveTo(m_pos[0]-100)
+                    elif newLine[4] < 0:
+                        if newLine[4] > -ALMOST_FLAT_SLOPE:
+                            print("//////////////////////////////\nSlope < 0!")
+                            gui.moveTo(m_pos[0]+100)
+                            
+
+                
+                if newLine[0] < 635 and newLine[1] > 356 and newLine[4] < 0:
+                    directInput.HoldKey(directInput.W, 0.1)
+                    break
+
+                if newLine[0] > 653 and newLine[1] > 356 and newLine[4] > 0:
+                    directInput.HoldKey(directInput.W, 0.1)
+                    break
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    # arr = recognizer.recognition()
+    # print (arr)
+    # objectArray = ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection(screen,1270,710)
+    # print(objectArray)
+    
 
 # square_in(220, 100, 220, 100, WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
 ###################################################################### Main
