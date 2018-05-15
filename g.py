@@ -370,23 +370,3 @@ while True:
                     break
 
 
-
-
-
-
-
-
-
-
-
-
-
-    
-    # arr = recognizer.recognition()
-    # print (arr)
-    # objectArray = ObjectDetectionDeepLearning.deep_learning_object_detection.runDeepLearningObjectDetection(screen,1270,710)
-    # print(objectArray)
-    
-
-# square_in(220, 100, 220, 100, WINDOW_START_X+(WINDOW_WIDTH/2), WINDOW_START_Y+(WINDOW_HEIGHT/2))
-###################################################################### Main
