@@ -1,6 +1,29 @@
 # Agent-GPY
 A python bot which is tailor made to play Counter Strike 1.6 using Image Processing and Controller Emulation <br>
 
+### Read this paper if you want to know how it works in detail
+https://ieeexplore.ieee.org/document/8474885
+
+### Check this presentation out for a cool overview of the project
+https://github.com/jaspreetbhamra/Agent-GPY/blob/master/Slideshow/Agent%20GPY%20Slideshow.pdf
+<br/><br/>
+
+## Screenshots
+
+### This image indicates the process of training the model with 1 Positive & 1 Negative sample
+![The model training process](https://github.com/jaspreetbhamra/Agent-GPY/blob/master/Screenshots/Screenshot%201.png)
+
+### This image shows the controller status during testing (using a picture from the web)
+![The model training process](https://github.com/jaspreetbhamra/Agent-GPY/blob/master/Screenshots/Screenshots%202.png)
+
+### This image shows the simple navigation model's working
+1. The Bold-White lines are all the lines we get from Hough Lines - Line recognition algorithm
+2. The red lines show the estimated trace of the Hough Lines we used to read the 3D space
+3. The green circle indicates the centre of the closest horizontal line we can trace, thus giving us the desired direction of travel
+![The model training process](https://github.com/jaspreetbhamra/Agent-GPY/blob/master/Screenshots/Screenshot%203.png)
+
+
+
 # Instructions
 1. Install Python3
 2. Download the source
